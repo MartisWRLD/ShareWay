@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// 1. Das Ride-Modell importieren
+// Ride-Modell importieren
 const Ride = require('./models/Ride');
 
 const app = express();
@@ -13,15 +13,13 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// --- MONGODB VERBINDUNG ---
+// MONGODB VERBINDUNG
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shareway';
 mongoose.connect(mongoURI)
   .then(() => console.log('🟢 [MongoDB] Erfolgreich verbunden!'))
   .catch(err => console.error('🔴 [MongoDB] Verbindungsfehler:', err));
-// --------------------------
 
-
-// --- NEU: ROUTE ZUM ERSTELLEN EINER FAHRT ---
+//ROUTE ZUM ERSTELLEN EINER FAHRT
 app.post('/api/rides', async (req, res) => {
   try {
     // Erstellt ein neues Dokument basierend auf den Daten, die wir mitsenden

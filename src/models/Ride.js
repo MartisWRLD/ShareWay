@@ -16,7 +16,7 @@ const rideSchema = new mongoose.Schema({
   },
   vehicle_info: { type: String, default: '' },
   
-  // Start- und Zielort (perfekt für die TomTom Search API)
+  // Start- und Zielort
   start_name: { type: String, required: true },
   lat_start: { type: Number, required: true },
   lon_start: { type: Number, required: true },
@@ -28,11 +28,10 @@ const rideSchema = new mongoose.Schema({
   departure_time: { type: Date, required: true },
   seats_total: { type: Number, required: true },
   
-  // Hier betten wir die Waypoints direkt als Array ein!
+  //  Waypoints direkt als Array
   waypoints: [waypointSchema],
   
   created_at: { type: Date, default: Date.now }
 });
 
-// Das Modell exportieren, damit wir es in den Routen nutzen können
 module.exports = mongoose.model('Ride', rideSchema);
