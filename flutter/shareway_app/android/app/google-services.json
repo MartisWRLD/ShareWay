@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "563597744247",
+    "project_id": "shareway-f6764",
+    "storage_bucket": "shareway-f6764.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563597744247:android:8c3591b9c95c614b888e72",
+        "android_client_info": {
+          "package_name": "com.shareway.shareway"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtz9qkK_aYazJw0llydsF7sP10d8uaGsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
