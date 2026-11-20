@@ -1,0 +1,373 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ShareWay REST API",
+    "version": "1.0.0",
+    "description": "Backend-Schnittstelle für die ShareWay Carpooling-App mit Anbindung an Cloud Firestore."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Lokaler Entwicklungsserver"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Benutzerprofil erstellen oder speichern",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Benutzer erfolgreich gespeichert",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Eingabedaten"
+          }
+        }
+      }
+    },
+    "/api/vehicles": {
+      "post": {
+        "tags": ["Vehicles"],
+        "summary": "Neues Fahrzeug anlegen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Fahrzeug erfolgreich angelegt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Fehler beim Anlegen des Fahrzeugs"
+          }
+        }
+      }
+    },
+    "/api/rides": {
+      "get": {
+        "tags": ["Rides"],
+        "summary": "Alle Fahrten abrufen",
+        "responses": {
+          "200": {
+            "description": "Liste aller verfügbaren Fahrten",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ride"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Serverfehler beim Laden der Fahrten"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Rides"],
+        "summary": "Neue Fahrt erstellen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RideInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Fahrt erfolgreich erstellt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ride"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Fehler beim Erstellen der Fahrt"
+          }
+        }
+      }
+    },
+    "/api/bookings": {
+      "post": {
+        "tags": ["Bookings"],
+        "summary": "Neue Mitfahr-Buchung anlegen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Booking"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Buchung erfolgreich erstellt"
+          }
+        }
+      }
+    },
+    "/api/waypoints": {
+      "post": {
+        "tags": ["Waypoints"],
+        "summary": "Wegpunkt für eine Fahrt speichern",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaypointInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Wegpunkt erfolgreich gespeichert"
+          }
+        }
+      }
+    },
+    "/api/payments": {
+      "post": {
+        "tags": ["Payments"],
+        "summary": "Zahlungsvorgang erfassen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Zahlung erfolgreich erfasst"
+          }
+        }
+      }
+    },
+    "/api/ratings": {
+      "post": {
+        "tags": ["Ratings"],
+        "summary": "Bewertung abgeben",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bewertung erfolgreich gespeichert"
+          }
+        }
+      }
+    },
+    "/api/messages": {
+      "post": {
+        "tags": ["Messages"],
+        "summary": "Nachricht im Fahrten-Chat senden",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nachricht erfolgreich gesendet"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserInput": {
+        "type": "object",
+        "required": ["firstname", "lastname", "email"],
+        "properties": {
+          "userId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
+          "firstname": { "type": "string", "example": "Max" },
+          "lastname": { "type": "string", "example": "Mustermann" },
+          "username": { "type": "string", "example": "max_shareway" },
+          "email": { "type": "string", "example": "max@shareway.at" },
+          "phone": { "type": "string", "example": "+436641234567" },
+          "role": { "type": "string", "example": "driver" },
+          "picture": { "type": "string", "example": "https://example.com/avatar.jpg" },
+          "bio": { "type": "string", "example": "Pendle täglich zwischen Gmünd und Wien." },
+          "residence": { "type": "string", "example": "Gmünd" },
+          "vehiclesId": { "type": "string", "example": "veh_123" },
+          "ratingsId": { "type": "string", "example": "rat_123" }
+        }
+      },
+      "User": {
+        "allOf": [
+          { "$ref": "#/components/schemas/UserInput" },
+          {
+            "type": "object",
+            "properties": {
+              "created_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        ]
+      },
+      "VehicleInput": {
+        "type": "object",
+        "required": ["ownerId", "brand", "model", "seats_total"],
+        "properties": {
+          "ownerId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
+          "brand": { "type": "string", "example": "Volkswagen" },
+          "model": { "type": "string", "example": "Golf" },
+          "license_plate": { "type": "string", "example": "GD-123AB" },
+          "color": { "type": "string", "example": "Dunkelblau" },
+          "seats_total": { "type": "integer", "example": 5 }
+        }
+      },
+      "Vehicle": {
+        "allOf": [
+          { "$ref": "#/components/schemas/VehicleInput" },
+          {
+            "type": "object",
+            "properties": {
+              "vehiclesId": { "type": "string", "example": "veh_abc123" }
+            }
+          }
+        ]
+      },
+      "RideInput": {
+        "type": "object",
+        "required": ["driverId", "departure_time", "seats_available"],
+        "properties": {
+          "driverId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
+          "vehiclesId": { "type": "string", "example": "veh_abc123" },
+          "start_waypointId": { "type": "string", "example": "wp_start_1" },
+          "end_waypointId": { "type": "string", "example": "wp_end_1" },
+          "distance_km": { "type": "number", "format": "float", "example": 124.5 },
+          "duration_minutes": { "type": "integer", "example": 95 },
+          "departure_time": { "type": "string", "format": "date-time", "example": "2026-11-21T07:30:00Z" },
+          "seats_available": { "type": "integer", "example": 3 }
+        }
+      },
+      "Ride": {
+        "allOf": [
+          { "$ref": "#/components/schemas/RideInput" },
+          {
+            "type": "object",
+            "properties": {
+              "rideId": { "type": "string", "example": "ride_abc123xyz" },
+              "created_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        ]
+      },
+      "Booking": {
+        "type": "object",
+        "required": ["rideId", "passengerId", "booked_seats"],
+        "properties": {
+          "rideId": { "type": "string", "example": "ride_abc123xyz" },
+          "passengerId": { "type": "string", "example": "user_pass_456" },
+          "status": { "type": "string", "example": "pending" },
+          "start_waypointId": { "type": "string", "example": "wp_start_1" },
+          "end_waypointId": { "type": "string", "example": "wp_end_1" },
+          "booked_seats": { "type": "integer", "example": 1 }
+        }
+      },
+      "WaypointInput": {
+        "type": "object",
+        "required": ["rideId", "place_name", "lat", "lon", "stop_order"],
+        "properties": {
+          "rideId": { "type": "string", "example": "ride_abc123xyz" },
+          "place_name": { "type": "string", "example": "Hollabrunn Bahnhof" },
+          "lat": { "type": "number", "format": "float", "example": 48.5625 },
+          "lon": { "type": "number", "format": "float", "example": 16.0794 },
+          "stop_order": { "type": "integer", "example": 1 }
+        }
+      },
+      "PaymentInput": {
+        "type": "object",
+        "required": ["bookingId", "payerId", "amount", "payment_status"],
+        "properties": {
+          "bookingId": { "type": "string", "example": "book_789" },
+          "payerId": { "type": "string", "example": "user_pass_456" },
+          "amount": { "type": "number", "format": "float", "example": 8.5 },
+          "payment_status": { "type": "string", "example": "completed" },
+          "transaction_date": { "type": "string", "format": "date-time", "example": "2026-11-20T08:00:00Z" }
+        }
+      },
+      "RatingInput": {
+        "type": "object",
+        "required": ["rideId", "reviewerId", "revieweeId", "stars"],
+        "properties": {
+          "rideId": { "type": "string", "example": "ride_abc123xyz" },
+          "reviewerId": { "type": "string", "example": "user_pass_456" },
+          "revieweeId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
+          "stars": { "type": "integer", "example": 5 },
+          "comment": { "type": "string", "example": "Pünktlich und angenehme Fahrt!" }
+        }
+      },
+      "MessageInput": {
+        "type": "object",
+        "required": ["rideId", "senderId", "message_text"],
+        "properties": {
+          "rideId": { "type": "string", "example": "ride_abc123xyz" },
+          "senderId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
+          "message_text": { "type": "string", "example": "Bin in 5 Minuten beim Treffpunkt." },
+          "sent_at": { "type": "string", "format": "date-time", "example": "2026-11-20T08:15:00Z" }
+        }
+      }
+    }
+  }
+}
