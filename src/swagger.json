@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "ShareWay REST API",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Backend-Schnittstelle für die ShareWay Carpooling-App mit Anbindung an Cloud Firestore."
   },
   "servers": [
@@ -44,9 +44,42 @@
       }
     },
     "/api/vehicles": {
+      "get": {
+        "tags": ["Vehicles"],
+        "summary": "Fahrzeuge abrufen (optional nach Benutzer gefiltert)",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtert Fahrzeuge nach Besitzer-ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Fahrzeuge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vehicle"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Serverfehler beim Laden der Fahrzeuge"
+          }
+        }
+      },
       "post": {
         "tags": ["Vehicles"],
-        "summary": "Neues Fahrzeug anlegen",
+        "summary": "Neues Fahrzeug anlegen (inkl. Preis pro km)",
         "requestBody": {
           "required": true,
           "content": {
@@ -77,7 +110,44 @@
     "/api/rides": {
       "get": {
         "tags": ["Rides"],
-        "summary": "Alle Fahrten abrufen",
+        "summary": "Fahrten abrufen und optional filtern",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Startort / Startpunkt"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Zielort / Endpunkt"
+          },
+          {
+            "name": "departureTime",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Optionale Abfahrtszeit"
+          },
+          {
+            "name": "arrivalTime",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Optionale Ankunftszeit"
+          },
+          {
+            "name": "seats",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1 },
+            "description": "Mindestanzahl benötigter Sitzplätze"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Liste aller verfügbaren Fahrten",
@@ -99,7 +169,7 @@
       },
       "post": {
         "tags": ["Rides"],
-        "summary": "Neue Fahrt erstellen",
+        "summary": "Neue Fahrt erstellen (Ankunftszeit optional)",
         "requestBody": {
           "required": true,
           "content": {
@@ -144,6 +214,35 @@
         "responses": {
           "201": {
             "description": "Buchung erfolgreich erstellt"
+          }
+        }
+      }
+    },
+    "/api/bookings/{bookingId}/messages": {
+      "get": {
+        "tags": ["Messages"],
+        "summary": "Nachrichten zu einer Buchung abrufen",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Nachrichten zur Buchung",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageInput"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -214,7 +313,7 @@
     "/api/messages": {
       "post": {
         "tags": ["Messages"],
-        "summary": "Nachricht im Fahrten-Chat senden",
+        "summary": "Nachricht im Buchungs-/Fahrten-Chat senden",
         "requestBody": {
           "required": true,
           "content": {
@@ -266,14 +365,16 @@
       },
       "VehicleInput": {
         "type": "object",
-        "required": ["ownerId", "brand", "model", "seats_total"],
+        "required": ["ownerId", "brand", "model", "seats_total", "price_per_km"],
         "properties": {
           "ownerId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
+          "userId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
           "brand": { "type": "string", "example": "Volkswagen" },
           "model": { "type": "string", "example": "Golf" },
           "license_plate": { "type": "string", "example": "GD-123AB" },
           "color": { "type": "string", "example": "Dunkelblau" },
-          "seats_total": { "type": "integer", "example": 5 }
+          "seats_total": { "type": "integer", "example": 5 },
+          "price_per_km": { "type": "number", "format": "float", "example": 0.35 }
         }
       },
       "Vehicle": {
@@ -298,6 +399,12 @@
           "distance_km": { "type": "number", "format": "float", "example": 124.5 },
           "duration_minutes": { "type": "integer", "example": 95 },
           "departure_time": { "type": "string", "format": "date-time", "example": "2026-11-21T07:30:00Z" },
+          "arrival_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-21T09:05:00Z"
+          },
           "seats_available": { "type": "integer", "example": 3 }
         }
       },
@@ -322,7 +429,8 @@
           "status": { "type": "string", "example": "pending" },
           "start_waypointId": { "type": "string", "example": "wp_start_1" },
           "end_waypointId": { "type": "string", "example": "wp_end_1" },
-          "booked_seats": { "type": "integer", "example": 1 }
+          "booked_seats": { "type": "integer", "example": 1 },
+          "costs": { "type": "number", "format": "float", "example": 14.5 }
         }
       },
       "WaypointInput": {
@@ -360,8 +468,9 @@
       },
       "MessageInput": {
         "type": "object",
-        "required": ["rideId", "senderId", "message_text"],
+        "required": ["bookingId", "senderId", "message_text"],
         "properties": {
+          "bookingId": { "type": "string", "example": "book_789" },
           "rideId": { "type": "string", "example": "ride_abc123xyz" },
           "senderId": { "type": "string", "example": "7JYioz6joLPLgbZe6mog" },
           "message_text": { "type": "string", "example": "Bin in 5 Minuten beim Treffpunkt." },
